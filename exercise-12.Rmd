@@ -89,19 +89,76 @@ d <- d %>%
 #### Step 5
 - Plot residuals of max lifespan (relLife) in relation to Order. Which mammalian orders have the highest residual lifespan?
 
-    - Mammalian orders with the highest residual lifespan: 
+    - Based on maximum values, the mammalian orders with the highest residual lifespan: (1) primates, (2) rodentia, and (3) xenarthra
+    - Based on median values, the mammalian orders with the highest residual lifespan: (1) primates, (2) pholidota, and (3) Scandentia
     
 - Plot residuals of newborn mass (relNewbornMass) in relation to Order. Which mammalian orders have the have highest residual newborn mass?
 
-    - Mammalian orders with the highest residual newborn mass: 
+    - Based on maximum values, the mammalian orders with the highest residual newborn mass: (1) cetacea, (2) carnivora, (3) artiodactyla
+    - Based on median values, the mammalian orders with the highest residual newborn mass: (1) macroscelidea, (2) cetacea, (3) Hhracoidea
     
 - Plot residuals of weaning mass (relWeaningMass) in relation to Order. Which mammalian orders have the have highest relative weaning mass?
 
-    - Mammalian orders with the highest relative weaning mass:
+    - Based on maximum values, mammalian orders with the highest relative weaning mass: (1) carnivora, (2) perissodactyla, (3) cetacea
+    - Based on median values, the mammalian orders with the highest relative weaning mass: (1) perissodactyla, (2) insectivora, (3) cetacea
     
 ```{r}
+# Plot: Residuals of max lifespan (relLife) in relation to Order
+p_relLife <- ggplot(data = d, aes(x = order, y = relLife)) + 
+  geom_boxplot() + 
+  geom_jitter(alpha = 0.05) + # makes the dots more transparent 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  xlab("Order") + ylab("Residual Log(Max Lifespan)")
+p_relLife
 
+# To double check: max lifespan::order; use R's 5 number summary function fivenum() to definitively tell which orders have the highest max
+relLife_5 <- d %>%
+  group_by(order) %>%
+  summarise(n = n(),
+            min = fivenum(relLife)[1],
+            Q1 = fivenum(relLife)[2],
+            median = fivenum(relLife)[3],
+            Q3 = fivenum(relLife)[4],
+            max = fivenum(relLife)[5])
+relLife_5
 
+# Plot: Residuals of newborn mass (relNewbornMass) in relation to Order
+p_relNewbornMass <- ggplot(data = d, aes(x = order, y = relNewbornMass)) + 
+  geom_boxplot() + 
+  geom_jitter(alpha = 0.05) + # makes the dots more transparent 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  xlab("Order") + ylab("Residual Log(Newborn Mass (g)")
+p_relNewbornMass
+
+# It is difficult to tell what some of the maxes were on the graph, so using R's 5 number summary function fivenum() to definitively tell which orders have the highest max
+relNewbornMass_5 <- d %>%
+  group_by(order) %>%
+  summarise(n = n(),
+            min = fivenum(relNewbornMass)[1],
+            Q1 = fivenum(relNewbornMass)[2],
+            median = fivenum(relNewbornMass)[3],
+            Q3 = fivenum(relNewbornMass)[4],
+            max = fivenum(relNewbornMass)[5])
+relNewbornMass_5
+
+# Plot: Residuals of weaning mass (relWeaningMass) in relation to Order
+p_relWeaningMass <- ggplot(data = d, aes(x = order, y = relWeaningMass)) + 
+  geom_boxplot() + 
+  geom_jitter(alpha = 0.05) + # makes the dots more transparent 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  xlab("Order") + ylab("Residual Log(Weaning Mass (g))")
+p_relWeaningMass
+
+# To double check plots 
+relWeaningMass_5 <- d %>%
+  group_by(order) %>%
+  summarise(n = n(),
+            min = fivenum(relWeaningMass)[1],
+            Q1 = fivenum(relWeaningMass)[2],
+            median = fivenum(relWeaningMass)[3],
+            Q3 = fivenum(relWeaningMass)[4],
+            max = fivenum(relWeaningMass)[5])
+relWeaningMass_5
 ```
 
 #### Step 6
