@@ -164,11 +164,83 @@ relWeaningMass_5NumSum
 #### Step 6
 - Run models and a model selection process to evaluate what (now log transformed) variables best predict each of the two response variables, max. life(mo) and AFR(mo), from the set of the following predictors: gestation(mo), newborn(g), weaning(mo), wean mass(g), litters/year, and overall body mass(g).
 - What variables, if any, appear in all of this set of “top” models?
+
+    - The variables that appear in all the sets are `gestation(mo)`, 'litters/year', and 'weaning(mo)'. 
+    
 - Calculate and plot the model-averaged coefficients and their CIs across this set of top models.el selection process to evaluate what (now log transformed) variables best predict each of the two response variables, max. life(mo) and AFR(mo), from the set of the following predictors: gestation(mo), newborn(g), weaning(mo), wean mass(g), litters/year, and overall body mass(g).
 
 ```{r}
+# First, drop NAs
+# Drop NAs for the response variable max. life(mo)
+d_maxLife <- d %>%
+  drop_na(`max. life(mo)`,`gestation(mo)`, `newborn(g)`, `weaning(mo)`, `wean mass(g)`, `litters/year`, `mass(g)`)
 
+# Forward Selection Regression Modeling for max. life(mo)
+# max. life(mo)
+m0 <- lm(data = d_maxLife, `max. life(mo)` ~ 1)
+summary(m0)
 
+add1(m0, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, test = "F")
+# All values would add explanatory power, but gestation(mo) is associated with the highest new F statistic
+m1 <- update(m0, formula = . ~ . + `gestation(mo)`)
+summary(m1)
+
+add1(m1, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, test = "F")
+# All values would add explanatory power, but `litters/year` is associated with the highest new F statistic
+m2 <- update(m1, formula = . ~ . + `litters/year`)
+summary(m2)
+
+add1(m2, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, test = "F")
+# Newborn(g), wean mass(g), and mass(g) are all significant. Mass(g) has highest F value
+m3 <- update(m2, formula = . ~ . + `mass(g)`)
+summary(m3)
+
+add1(m3, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, test = "F")
+# Only weaning(mo) is significant!
+m4 <- update(m3, formula = . ~ . + `weaning(mo)`)
+summary(m4)
+
+add1(m4, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, test = "F")
+# No more terms are significant! There are not any more predictors that would improve the explanatory power of the model.
+# m4 is our model of interest for max life (mo)
+
+# Repeat for AFR (mo)
+# Drop NAs for the response variable AFR(mo)
+d_AFR <- d %>%
+  drop_na(`AFR(mo)`,`gestation(mo)`, `newborn(g)`, `weaning(mo)`, `wean mass(g)`, `litters/year`, `mass(g)`)
+
+# Create base linear model
+lm0 <- lm(data = d_AFR, `AFR(mo)` ~ 1)
+summary(m0)
+
+add1(lm0, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, test = "F")
+
+# All values would add explanatory power, but `litters/year` is associated with the highest new F statistic
+lm1 <- update(lm0, formula = . ~ . + `litters/year`)
+summary(lm1)
+
+add1(lm1, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, test = "F")
+
+# All values would add explanatory power, but `gestation(mo)` is associated with the highest new F statistic
+lm2 <- update(lm1, formula = . ~ . + `gestation(mo)`)
+summary(lm2)
+
+add1(lm2, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, test = "F")
+
+# `weaning(mo)`, `wean mass(g)`, `mass(g)` would add explanatory power, but `wean mass(g)` is associated with the highest new F statistic
+lm3 <- update(lm2, formula = . ~ . + `wean mass(g)`)
+summary(lm3)
+
+add1(lm3, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, test = "F")
+
+# Only `weaning(mo)` is significant
+lm4 <- update(lm3, formula = . ~ . + `weaning(mo)`)
+summary(lm4)
+
+add1(lm4, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, test = "F")
+# No more significance! There are not any more predictors that would improve the explanatory power of the model. 
+# lm4 is the best model
 ```
+
 
 
