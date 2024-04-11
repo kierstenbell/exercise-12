@@ -163,9 +163,13 @@ relWeaningMass_5NumSum
 
 #### Step 6
 - Run models and a model selection process to evaluate what (now log transformed) variables best predict each of the two response variables, max. life(mo) and AFR(mo), from the set of the following predictors: gestation(mo), newborn(g), weaning(mo), wean mass(g), litters/year, and overall body mass(g).
+- For each of the two response variables, indicate what is the best model overall based on AICc and how many models have a delta AICc of 4 or less.
+
+    - See below. For `max. life(mo)` m4 is the best model, and it is the only model that has a delta AICc of 4 or less. For `AFR(m0)`, lm4 is the best model, and it is the only model that has  a delta AICc of 4 or less. 
+    
 - What variables, if any, appear in all of this set of “top” models?
 
-    - The variables that appear in all the sets are `gestation(mo)`, 'litters/year', and 'weaning(mo)'. 
+    - The variables that appear in all the sets are `gestation(mo)`, `litters/year`, and `weaning(mo)`. 
     
 - Calculate and plot the model-averaged coefficients and their CIs across this set of top models.el selection process to evaluate what (now log transformed) variables best predict each of the two response variables, max. life(mo) and AFR(mo), from the set of the following predictors: gestation(mo), newborn(g), weaning(mo), wean mass(g), litters/year, and overall body mass(g).
 
@@ -202,7 +206,10 @@ summary(m4)
 
 add1(m4, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, test = "F")
 # No more terms are significant! There are not any more predictors that would improve the explanatory power of the model.
-# m4 is our model of interest for max life (mo)
+# m4 is our best model for max life (mo)
+
+library(AICcmodavg)
+aictab(list(m0, m1, m2, m3, m4), c("m0", "m1", "m2", "m3", "m4"))
 
 # Repeat for AFR (mo)
 # Drop NAs for the response variable AFR(mo)
@@ -239,7 +246,9 @@ summary(lm4)
 
 add1(lm4, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, test = "F")
 # No more significance! There are not any more predictors that would improve the explanatory power of the model. 
-# lm4 is the best model
+# lm4 is the best model for AFR(m0)
+aictab(list(lm0, lm1, lm2, lm3, lm4), c("lm0", "lm1", "lm2", "lm3", "lm4"))
+detach(package:AICcmodavg)
 ```
 
 
