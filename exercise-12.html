@@ -756,6 +756,26 @@ transformed) overall body mass(g) and add the residuals to the dataframe
 as new variables (relGest, relWean, relAFR, relLife, relNewbornMass, and
 relWeaningMass).</li>
 </ul>
+<pre class="r"><code># Regress the selected variables on log transformed body mass, called mass(g)
+# Must include na.action = na.include in order to include NA to make sure the matrix fits 
+m1 &lt;- lm(`gestation(mo)` ~ `mass(g)`, data = d, na.action = na.exclude)
+m2 &lt;- lm(`weaning(mo)` ~ `mass(g)`, data = d, na.action = na.exclude)
+m3 &lt;- lm(`AFR(mo)` ~ `mass(g)`, data = d, na.action = na.exclude)
+m4 &lt;- lm(`max. life(mo)` ~ `mass(g)`, data = d, na.action = na.exclude)
+m5 &lt;- lm(`newborn(g)` ~ `mass(g)`, data = d, na.action = na.exclude)
+m6 &lt;- lm(`wean mass(g)` ~ `mass(g)`, data = d,  na.action = na.exclude)
+
+
+# Need to call resid(). Doing m1$residuals did not include NA...
+d &lt;- d %&gt;%
+  mutate(
+    relGest = resid(m1),
+    relWean = resid(m2), 
+    relAFR = resid(m3),
+    relLife = resid(m4),
+    relNewbornMass = resid(m5), 
+    relWeaningMass = resid(m6)
+  )</code></pre>
 </div>
 <div id="step-5" class="section level4">
 <h4>Step 5</h4>
