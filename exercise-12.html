@@ -729,6 +729,22 @@ glimpse(d) # litter size and refs are dropped </code></pre>
 <ul>
 <li>Log transform all of the other numeric variables</li>
 </ul>
+<pre class="r"><code># The mutate(across(where(is.numeric))) looks for variables that are numeric and log transforms. NOTE. Variable names DO NOT CHANGE. 
+d &lt;- d %&gt;% 
+  mutate(across(where(is.numeric), ~log(.)))
+
+head(d)</code></pre>
+<pre><code>## # A tibble: 6 × 12
+##   order        family       Genus species `mass(g)` `gestation(mo)` `newborn(g)`
+##   &lt;chr&gt;        &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt;       &lt;dbl&gt;           &lt;dbl&gt;        &lt;dbl&gt;
+## 1 Artiodactyla Antilocapri… Anti… americ…      10.7            2.10         8.09
+## 2 Artiodactyla Bovidae      Addax nasoma…      12.1            2.24         8.61
+## 3 Artiodactyla Bovidae      Aepy… melamp…      10.6            1.85         8.54
+## 4 Artiodactyla Bovidae      Alce… busela…      11.9            2.07         9.23
+## 5 Artiodactyla Bovidae      Ammo… clarkei      10.3            1.92        NA   
+## 6 Artiodactyla Bovidae      Ammo… lervia       10.9            1.63         8.25
+## # ℹ 5 more variables: `weaning(mo)` &lt;dbl&gt;, `wean mass(g)` &lt;dbl&gt;,
+## #   `AFR(mo)` &lt;dbl&gt;, `max. life(mo)` &lt;dbl&gt;, `litters/year` &lt;dbl&gt;</code></pre>
 </div>
 <div id="step-4" class="section level4">
 <h4>Step 4</h4>

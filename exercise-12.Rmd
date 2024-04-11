@@ -52,8 +52,11 @@ glimpse(d) # litter size and refs are dropped
 - Log transform all of the other numeric variables
 
 ```{r}
+# The mutate(across(where(is.numeric))) looks for variables that are numeric and log transforms. NOTE. Variable names DO NOT CHANGE. 
+d <- d %>% 
+  mutate(across(where(is.numeric), ~log(.)))
 
-
+head(d)
 ```
 
 
