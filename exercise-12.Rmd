@@ -112,7 +112,7 @@ p_relLife <- ggplot(data = d, aes(x = order, y = relLife)) +
 p_relLife
 
 # To double check: max lifespan::order; use R's 5 number summary function fivenum() to definitively tell which orders have the highest max
-relLife_5 <- d %>%
+relLife_5NumSum <- d %>%
   group_by(order) %>%
   summarise(n = n(),
             min = fivenum(relLife)[1],
@@ -120,7 +120,7 @@ relLife_5 <- d %>%
             median = fivenum(relLife)[3],
             Q3 = fivenum(relLife)[4],
             max = fivenum(relLife)[5])
-relLife_5
+relLife_5NumSum
 
 # Plot: Residuals of newborn mass (relNewbornMass) in relation to Order
 p_relNewbornMass <- ggplot(data = d, aes(x = order, y = relNewbornMass)) + 
@@ -131,7 +131,7 @@ p_relNewbornMass <- ggplot(data = d, aes(x = order, y = relNewbornMass)) +
 p_relNewbornMass
 
 # It is difficult to tell what some of the maxes were on the graph, so using R's 5 number summary function fivenum() to definitively tell which orders have the highest max
-relNewbornMass_5 <- d %>%
+relNewbornMass_5NumSum <- d %>%
   group_by(order) %>%
   summarise(n = n(),
             min = fivenum(relNewbornMass)[1],
@@ -139,7 +139,7 @@ relNewbornMass_5 <- d %>%
             median = fivenum(relNewbornMass)[3],
             Q3 = fivenum(relNewbornMass)[4],
             max = fivenum(relNewbornMass)[5])
-relNewbornMass_5
+relNewbornMass_5NumSum
 
 # Plot: Residuals of weaning mass (relWeaningMass) in relation to Order
 p_relWeaningMass <- ggplot(data = d, aes(x = order, y = relWeaningMass)) + 
@@ -150,7 +150,7 @@ p_relWeaningMass <- ggplot(data = d, aes(x = order, y = relWeaningMass)) +
 p_relWeaningMass
 
 # To double check plots 
-relWeaningMass_5 <- d %>%
+relWeaningMass_5NumSum <- d %>%
   group_by(order) %>%
   summarise(n = n(),
             min = fivenum(relWeaningMass)[1],
@@ -158,11 +158,11 @@ relWeaningMass_5 <- d %>%
             median = fivenum(relWeaningMass)[3],
             Q3 = fivenum(relWeaningMass)[4],
             max = fivenum(relWeaningMass)[5])
-relWeaningMass_5
+relWeaningMass_5NumSum
 ```
 
 #### Step 6
-- Run models and a modFor each of the two response variables, indicate what is the best model overall based on AICc and how many models have a delta AICc of 4 or less.
+- Run models and a model selection process to evaluate what (now log transformed) variables best predict each of the two response variables, max. life(mo) and AFR(mo), from the set of the following predictors: gestation(mo), newborn(g), weaning(mo), wean mass(g), litters/year, and overall body mass(g).
 - What variables, if any, appear in all of this set of “top” models?
 - Calculate and plot the model-averaged coefficients and their CIs across this set of top models.el selection process to evaluate what (now log transformed) variables best predict each of the two response variables, max. life(mo) and AFR(mo), from the set of the following predictors: gestation(mo), newborn(g), weaning(mo), wean mass(g), litters/year, and overall body mass(g).
 
