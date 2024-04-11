@@ -1,0 +1,96 @@
+---
+title: "exercise-12"
+output: html_document
+date: "2024-04-10"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Preliminaries
+- Using the {tidyverse} read_tsv() function, load the “Mammal_lifehistories_v2.txt” dataset from this [URL](https://raw.githubusercontent.com/difiore/ada-2024-datasets/main/Mammal_lifehistories_v2.txt) as a “tibble” named d. As discussed in class, this is dataset that compiles life history and other variables for over 1400 species of placental mammals from 17 different Orders.
+- Do a bit of exploratory data analysis with this dataset, e.g., using the {skimr} package. Which of the variables are categorical and which are numeric?
+
+    - Categorical variables: order, family, Genus, and species
+    - Numeric variables: mass(g), gestation(mo), newborn(g), weaning(mo), wean mass(g), AFR(mo) max.life(mo), litter size, litters/year, refs
+
+```{r cars}
+# Load libraries 
+library(skimr)
+library(tidyverse)
+library(naniar)
+
+# Grab file
+f <- "https://raw.githubusercontent.com/difiore/ada-2024-datasets/main/Mammal_lifehistories_v2.txt"
+d <- read_tsv(f, col_names = TRUE)
+skim (d)
+head(d)
+
+```
+#### Step 1 
+- Replace all values of -999 (the authors’ code for missing data) with NA.
+
+```{r}
+# use replace_with_na_all() function from the {naniar} to replace -999 with NA.
+d <- replace_with_na_all(data = d, condition = ~.x == -999.00)
+
+```
+
+#### Step 2 
+- Drop the variables **litter size** and **refs**.
+
+```{r}
+d <- d %>%
+  select(-c(`litter size`, refs))
+
+# double check 
+glimpse(d) # litter size and refs are dropped 
+```
+
+#### Step 3
+- Log transform all of the other numeric variables
+
+```{r}
+
+
+```
+
+
+#### Step 4 
+- Regress the (now log transformed) age [gestation(mo), weaning(mo), AFR(mo) (age at first reproduction), and max. life(mo) (maximum lifespan)] and mass [newborn(g) and wean mass(g)] variables on (now log transformed) overall body mass(g) and add the residuals to the dataframe as new variables (relGest, relWean, relAFR, relLife, relNewbornMass, and relWeaningMass).
+```{r}
+
+
+
+```
+
+#### Step 5
+- Plot residuals of max lifespan (relLife) in relation to Order. Which mammalian orders have the highest residual lifespan?
+
+    - Mammalian orders with the highest residual lifespan: 
+    
+- Plot residuals of newborn mass (relNewbornMass) in relation to Order. Which mammalian orders have the have highest residual newborn mass?
+
+    - Mammalian orders with the highest residual newborn mass: 
+    
+- Plot residuals of weaning mass (relWeaningMass) in relation to Order. Which mammalian orders have the have highest relative weaning mass?
+
+    - Mammalian orders with the highest relative weaning mass:
+    
+```{r}
+
+
+```
+
+#### Step 6
+- Run models and a modFor each of the two response variables, indicate what is the best model overall based on AICc and how many models have a delta AICc of 4 or less.
+- What variables, if any, appear in all of this set of “top” models?
+- Calculate and plot the model-averaged coefficients and their CIs across this set of top models.el selection process to evaluate what (now log transformed) variables best predict each of the two response variables, max. life(mo) and AFR(mo), from the set of the following predictors: gestation(mo), newborn(g), weaning(mo), wean mass(g), litters/year, and overall body mass(g).
+
+```{r}
+
+
+```
+
+
