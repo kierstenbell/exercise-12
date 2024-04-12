@@ -212,11 +212,12 @@ add1(m4, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean 
 library(MASS)
 
 # Start with the full model 
-m.full <- lm(data = d_maxLife, `max. life(mo)` ~ `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`)
-s <- stepAIC(m.full, scope = .~., direction = "both")
+m.full.MaxLife <- lm(data = d_maxLife, `max. life(mo)` ~ `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`)
+s <- stepAIC(m.full.MaxLife, scope = .~., direction = "both")
 summary(s)
 # ... this confirms m4 as our model since the same terms as before, `gestation(mo)`, `weaning(mo)`, `litters/year`, and `mass(g)` add explanatory power to the model. 
 
+# Check delta AICc of 4 or less
 library(AICcmodavg)
 aictab(list(m0, m1, m2, m3, m4), c("m0", "m1", "m2", "m3", "m4"))
 
@@ -262,8 +263,8 @@ detach(package:AICcmodavg)
 
 # ...Using AIC to select
 # Start with the full model 
-m.full <- lm(data = d_AFR, `AFR(mo)` ~ `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`)
-s <- stepAIC(m.full, scope = .~., direction = "both")
+m.full.AFR <- lm(data = d_AFR, `AFR(mo)` ~ `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`)
+s <- stepAIC(m.full.AFR, scope = .~., direction = "both")
 summary(s)
 # ... this confirms lm4 as our model since the same terms as before, `gestation(mo)`, `weaning(mo)`, `litters/year`, and `mass(g)` add explanatory power to the model. 
 detach(package:MASS)
