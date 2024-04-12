@@ -208,8 +208,18 @@ add1(m4, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean 
 # No more terms are significant! There are not any more predictors that would improve the explanatory power of the model.
 # m4 is our best model for max life (mo)
 
+# ...Using AIC to select
+library(MASS)
+
+# Start with the full model 
+m.full <- lm(data = d_maxLife, `max. life(mo)` ~ `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`)
+s <- stepAIC(m.full, scope = .~., direction = "both")
+summary(s)
+# ... this confirms m4 as our model since the same terms as before, `gestation(mo)`, `weaning(mo)`, `litters/year`, and `mass(g)` add explanatory power to the model. 
+
 library(AICcmodavg)
 aictab(list(m0, m1, m2, m3, m4), c("m0", "m1", "m2", "m3", "m4"))
+
 
 # Repeat for AFR (mo)
 # Drop NAs for the response variable AFR(mo)
@@ -249,24 +259,49 @@ add1(lm4, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean
 # lm4 is the best model for AFR(m0)
 aictab(list(lm0, lm1, lm2, lm3, lm4), c("lm0", "lm1", "lm2", "lm3", "lm4"))
 detach(package:AICcmodavg)
+
+# ...Using AIC to select
+# Start with the full model 
+m.full <- lm(data = d_AFR, `AFR(mo)` ~ `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`)
+s <- stepAIC(m.full, scope = .~., direction = "both")
+summary(s)
+# ... this confirms lm4 as our model since the same terms as before, `gestation(mo)`, `weaning(mo)`, `litters/year`, and `mass(g)` add explanatory power to the model. 
+detach(package:MASS)
 ```
 
 ```{r}
 # Using {MuMIn} package, we calculate the model-averaged coefficients and their CIs across this set of top models.
 library(MuMIn)
 # Max life (mo)
-# Using information from M4 with na.action = "na.fail"
-m.MaxLife <- lm(data = d_maxLife, `max. life(mo)` ~ `gestation(mo)` + `litters/year` + `mass(g)` + `weaning(mo)`, na.action = "na.fail")
+# Using full data set
+m.full <- lm(data = d_maxLife, `max. life(mo)` ~ `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, na.action = "na.fail")
 
-#mods.MaxLife <- dredge(m.MaxLife, beta = "none", m.lim = c(0, 4))
-#mods.avg.MaxLife <- summary(model.avg(mods.MaxLife, subset = delta < 4, fit = TRUE))
-#confint(mods.avg.MaxLife)
+# dredge from {MuMIn} explores subsets of a given global model in an automated way.
+mods <- dredge(m.full, beta = "none", m.lim = c(0, 4))
 
+# dredge() does not actually store the model results; use model.avg() function returns a “summary.averaging” object.
+# average beta coefficients for models in the 95% confidence set, i.e., for cumulative AIC weights up to 95%:
+(mods.avg <- summary(model.avg(mods, subset = cumsum(weight) <= 0.95, fit = TRUE)))
 
+#use the confint() function for confidence intervals for the averaged average beta coefficients for models in the 95% CI set
+confint(mods.avg)
 
 # Using {MuMIn} package, we can also plot this
+plot(mods.avg, full = TRUE, intercept = FALSE, main = "Model-averaged Coefficients for Maximum Life (months)")
 
+# Age at first reproduction (AFR)
+m.full <- lm(data = d_AFR, `AFR(mo)` ~ `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, na.action = "na.fail")
 
+# dredge from {MuMIn}
+mods <- dredge(m.full, beta = "none", m.lim = c(0, 4))
+
+(mods.avg <- summary(model.avg(mods, subset = cumsum(weight) <= 0.95, fit = TRUE)))
+
+#use the confint() function for confidence intervals for the averaged average beta coefficients for models in the 95% CI set
+confint(mods.avg)
+
+# Using {MuMIn} package, we can also plot this
+plot(mods.avg, full = TRUE, intercept = FALSE, main = "Model-averaged Coefficients for \nAge at First Reproduction (months)")
 ```
 
 
