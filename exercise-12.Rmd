@@ -222,7 +222,7 @@ library(MASS)
 m.full.MaxLife <- lm(data = d_maxLife, `max. life(mo)` ~ `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`)
 s <- stepAIC(m.full.MaxLife, scope = .~., direction = "both")
 summary(s)
-# ... this confirms m4 as our model since the same terms as before, `gestation(mo)`, `weaning(mo)`, `litters/year`, and `mass(g)` add explanatory power to the model. 
+# ... same as our m4 model: `gestation(mo)`, `weaning(mo)`, `litters/year`, and `mass(g)` add explanatory power to the model. 
 
 # Check delta AICc of 4 or less
 library(AICcmodavg)
@@ -274,6 +274,21 @@ summary(m4_AFR)
 add1(m4_AFR, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)`+ `litters/year` + `mass(g)`, test = "F")
 #Remaining variables do not add any more explanatory power. 
 
+# Same thing but backwards selection to double check 
+full_AFR <- lm(data = d_AFR, `AFR(mo)` ~ `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`)
+summary(full_AFR)
+
+drop1(full_AFR, test = "F") 
+# `wean mass(g)`  has non-sig p-value, lowest F, and lowest increase in RSS; does not add any explanatory power
+
+m1_AFR.drop <- update(full_AFR, . ~ . - `wean mass(g)`)
+summary(m1_AFR.drop)
+
+drop1(m1_AFR.drop, test = "F") # `newborn(g)` has non-sig p-value, lowest F, and lowest increase in RSS; does not add any explanatory power
+
+m2_AFR.drop <- update(m1_AFR.drop, . ~ . - `newborn(g)`)
+summary(m2_AFR.drop) # all explanatory variables are significant, model 2 is best
+
 aictab(list(m0_AFR, m1_AFR, m2_AFR, m3_AFR, m4_AFR), c("m0_AFR", "m1_AFR", "m2_AFR", "m3_AFR", "m4_AFR"))
 detach(package:AICcmodavg)
 
@@ -282,7 +297,7 @@ detach(package:AICcmodavg)
 m.full.AFR <- lm(data = d_AFR, `AFR(mo)` ~ `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, na.action = na.fail)
 s <- stepAIC(m.full.AFR, scope = . ~ ., direction = "both")
 summary(s)
-# ... this confirms lm4 as our model since the same terms as before, `gestation(mo)`, `weaning(mo)`, `litters/year`, and `mass(g)` add explanatory power to the model. 
+# Forward selection and reverse selection yielded different results. Reverse selection had the same variables as AIC. `litters/year`, `gestation(mo)`, and  `weaning (mo)` are the same across and add explanatory power to the model. 
 detach(package:MASS)
 ```
 
