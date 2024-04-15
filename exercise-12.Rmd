@@ -44,7 +44,7 @@ d <- replace_with_na_all(data = d, condition = ~.x == -999.00)
 
 ```{r}
 d <- d %>%
-  select(-c(`litter size`, refs))
+  dplyr::select(-c(`litter size`, refs))
 
 # double check 
 glimpse(d) # litter size and refs are dropped 
@@ -54,11 +54,11 @@ glimpse(d) # litter size and refs are dropped
 - Log transform all of the other numeric variables
 
 ```{r}
-# The mutate(across(where(is.numeric))) looks for variables that are numeric and log transforms. NOTE. Variable names DO NOT CHANGE. 
+# The mutate(across(where(is.numeric))) looks for variables that are numeric and log transforms. NOTE: Variable names DO NOT CHANGE. I am keeping them the same. Option to mutate(rename())
 d <- d %>% 
   mutate(across(where(is.numeric), ~log(.)))
 
-head(d)
+glimpse(d)
 ```
 
 
@@ -172,11 +172,12 @@ relWeaningMass_5NumSum
 - Run models and a model selection process to evaluate what (now log transformed) variables best predict each of the two response variables, max. life(mo) and AFR(mo), from the set of the following predictors: gestation(mo), newborn(g), weaning(mo), wean mass(g), litters/year, and overall body mass(g).
 - For each of the two response variables, indicate what is the best model overall based on AICc and how many models have a delta AICc of 4 or less.
 
-    - See below. For `max. life(mo)` m4 is the best model which includes log transformed variables of `gestation(mo)`, `litters/year`, `mass(g)`,`weaning(mo)`. It is the only model that has a delta AICc of 4 or less. For `AFR(m0)`, lm4 is the best model which includes log transformed variables of `litters/year`, `gestation(mo)`, `wean mass(g)`, and `weaning(mo)`. It is the only model that has  a delta AICc of 4 or less. 
+    - For `max. life(mo)` m4 is the best model which includes log transformed variables of `gestation(mo)`, `litters/year`, `mass(g)`,`weaning(mo)`. There are 5 models that have a delta AICc of 4 or less.
+    - For `AFR(m0)`, the forward selection model has the log transformed variables of `litters/year`, `gestation(mo)`, `weaning(mo)`, and `wean mass(g)` as adding explanatory power. Reverse selection and AIC models have the log transformed variables of `litters/year`, `gestation(mo)`, `weaning(mo)`, and `mass(g)` as adding explanatory power. There are 7 models that have a delta AICc of 4 or less. 
     
 - What variables, if any, appear in all of this set of “top” models?
 
-    - The variables that appear in all the sets are log transformed `gestation(mo)`, `litters/year`, and `weaning(mo)`. 
+    - The variables that appear in all the sets are log transformed `gestation(mo)`, `litters/year`, and `weaning(mo)`. `mass(g)` appears in most models. 
     
 - Calculate and plot the model-averaged coefficients and their CIs across this set of top models.
 
@@ -309,11 +310,16 @@ library(MuMIn)
 m.full <- lm(data = d_maxLife, `max. life(mo)` ~ `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, na.action = "na.fail")
 
 # dredge from {MuMIn} explores subsets of a given global model in an automated way.
-mods <- dredge(m.full, beta = "none", m.lim = c(0, 4))
+mods <- dredge(m.full)
+
+# number of models of delta AICc of 4 of less
+(mods_delta <- subset(mods, delta <= 4)) 
 
 # dredge() does not actually store the model results; use model.avg() function returns a “summary.averaging” object.
 # average beta coefficients for models in the 95% confidence set, i.e., for cumulative AIC weights up to 95%:
-(mods.avg <- summary(model.avg(mods, subset = cumsum(weight) <= 0.95, fit = TRUE)))
+(mods.avg <- summary(model.avg(mods, subset = delta <= 4, fit = TRUE)))
+
+mods.avg$msTable
 
 #use the confint() function for confidence intervals for the averaged average beta coefficients for models in the 95% CI set
 confint(mods.avg)
@@ -325,9 +331,15 @@ plot(mods.avg, full = TRUE, intercept = FALSE, main = "Model-averaged Coefficien
 m.full <- lm(data = d_AFR, `AFR(mo)` ~ `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, na.action = "na.fail")
 
 # dredge from {MuMIn}
-mods <- dredge(m.full, beta = "none", m.lim = c(0, 4))
+mods <- dredge(m.full)
 
-(mods.avg <- summary(model.avg(mods, subset = cumsum(weight) <= 0.95, fit = TRUE)))
+# number of models of delta AICc of 4 of less
+(mods_delta <- subset(mods, delta <= 4)) 
+
+# average coefficients for top models where delta.aicc <= 4
+(mods.avg <- summary(model.avg(mods, subset = delta <= 4, fit = TRUE)))
+
+mods.avg$msTable
 
 #use the confint() function for confidence intervals for the averaged average beta coefficients for models in the 95% CI set
 confint(mods.avg)
