@@ -173,7 +173,7 @@ relWeaningMass_5NumSum
 - For each of the two response variables, indicate what is the best model overall based on AICc and how many models have a delta AICc of 4 or less.
 
     - For `max. life(mo)` m4 is the best model which includes log transformed variables of `gestation(mo)`, `litters/year`, `mass(g)`,`weaning(mo)`. There are 5 models that have a delta AICc of 4 or less.
-    - For `AFR(m0)`, the forward selection model has the log transformed variables of `litters/year`, `gestation(mo)`, `weaning(mo)`, and `wean mass(g)` as adding explanatory power. Reverse selection and AIC models have the log transformed variables of `litters/year`, `gestation(mo)`, `weaning(mo)`, and `mass(g)` as adding explanatory power. There are 7 models that have a delta AICc of 4 or less. 
+    - For `AFR(mo)`, the forward selection model has the log transformed variables of `litters/year`, `gestation(mo)`, `weaning(mo)`, and `wean mass(g)` as adding explanatory power. Reverse selection and AIC models have the log transformed variables of `litters/year`, `gestation(mo)`, `weaning(mo)`, and `mass(g)` as adding explanatory power. There are 7 models that have a delta AICc of 4 or less. 
     
 - What variables, if any, appear in all of this set of “top” models?
 
@@ -181,7 +181,7 @@ relWeaningMass_5NumSum
     
 - Calculate and plot the model-averaged coefficients and their CIs across this set of top models.
 
-First: max life
+#### First: max life
 ```{r}
 # First, drop NAs
 # Drop NAs for the response variable max. life(mo)
@@ -230,7 +230,7 @@ library(AICcmodavg)
 aictab(list(m0, m1, m2, m3, m4), c("m0", "m1", "m2", "m3", "m4"))
 ```
 
-Next: AFR 
+#### Next: AFR 
 ```{r}
 # Repeat for AFR (mo)
 # Drop NAs for the response variable AFR(mo)
