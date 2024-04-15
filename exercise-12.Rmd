@@ -2,6 +2,8 @@
 title: "exercise-12"
 output: html_document
 date: "2024-04-10"
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -15,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
     - Categorical variables: order, family, Genus, and species
     - Numeric variables: mass(g), gestation(mo), newborn(g), weaning(mo), wean mass(g), AFR(mo) max.life(mo), litter size, litters/year, refs
 
-```{r cars}
+```{r}
 # Load libraries 
 library(skimr)
 library(tidyverse)
@@ -65,12 +67,12 @@ head(d)
 ```{r}
 # Regress the selected variables on log transformed body mass, called mass(g)
 # Must include na.action = na.include in order to include NA to make sure the matrix fits 
-m1 <- lm(`gestation(mo)` ~ `mass(g)`, data = d, na.action = na.exclude)
-m2 <- lm(`weaning(mo)` ~ `mass(g)`, data = d, na.action = na.exclude)
-m3 <- lm(`AFR(mo)` ~ `mass(g)`, data = d, na.action = na.exclude)
-m4 <- lm(`max. life(mo)` ~ `mass(g)`, data = d, na.action = na.exclude)
-m5 <- lm(`newborn(g)` ~ `mass(g)`, data = d, na.action = na.exclude)
-m6 <- lm(`wean mass(g)` ~ `mass(g)`, data = d,  na.action = na.exclude)
+m1 <- lm(`mass(g)` ~ `gestation(mo)`, data = d, na.action = na.exclude)
+m2 <- lm(`mass(g)` ~ `weaning(mo)`, data = d, na.action = na.exclude)
+m3 <- lm(`mass(g)` ~ `AFR(mo)`, data = d, na.action = na.exclude)
+m4 <- lm(`mass(g)` ~ `max. life(mo)`, data = d, na.action = na.exclude)
+m5 <- lm(`mass(g)` ~ `newborn(g)`, data = d, na.action = na.exclude)
+m6 <- lm(`mass(g)` ~ `wean mass(g)`, data = d,  na.action = na.exclude)
 
 
 # Need to call resid(). Doing m1$residuals did not include NA...
@@ -89,22 +91,12 @@ d <- d %>%
 #### Step 5
 - Plot residuals of max lifespan (relLife) in relation to Order. Which mammalian orders have the highest residual lifespan?
 
-    - Based on maximum values, the mammalian orders with the highest residual lifespan: (1) primates, (2) rodentia, and (3) xenarthra
-    - Based on median values, the mammalian orders with the highest residual lifespan: (1) primates, (2) pholidota, and (3) Scandentia
-    
-- Plot residuals of newborn mass (relNewbornMass) in relation to Order. Which mammalian orders have the have highest residual newborn mass?
-
-    - Based on maximum values, the mammalian orders with the highest residual newborn mass: (1) cetacea, (2) carnivora, (3) artiodactyla
-    - Based on median values, the mammalian orders with the highest residual newborn mass: (1) macroscelidea, (2) cetacea, (3) Hhracoidea
-    
-- Plot residuals of weaning mass (relWeaningMass) in relation to Order. Which mammalian orders have the have highest relative weaning mass?
-
-    - Based on maximum values, mammalian orders with the highest relative weaning mass: (1) carnivora, (2) perissodactyla, (3) cetacea
-    - Based on median values, the mammalian orders with the highest relative weaning mass: (1) perissodactyla, (2) insectivora, (3) cetacea
+    - Based on maximum values, the mammalian orders with the highest residual lifespan: (1) Sirenia, (2) Perissodactyla, and (3) Rodentia
+    - Based on median values, the mammalian orders with the highest residual lifespan: (1) Cetacea, (2) Artiodactyla, and (3) Proboscidea
     
 ```{r}
 # Plot: Residuals of max lifespan (relLife) in relation to Order
-p_relLife <- ggplot(data = d, aes(x = order, y = relLife)) + 
+p_relLife <- ggplot(data = d %>% drop_na(relLife), aes(x = order, y = relLife)) + 
   geom_boxplot() + 
   geom_jitter(alpha = 0.05) + # makes the dots more transparent 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
@@ -121,9 +113,16 @@ relLife_5NumSum <- d %>%
             Q3 = fivenum(relLife)[4],
             max = fivenum(relLife)[5])
 relLife_5NumSum
+```
 
+- Plot residuals of newborn mass (relNewbornMass) in relation to Order. Which mammalian orders have the have highest residual newborn mass?
+
+    - Based on maximum values, the mammalian orders with the highest residual newborn mass: (1) Carnivora (2) Xenarthra (3) Artiodactyla
+    - Based on median values, the mammalian orders with the highest residual newborn mass: (1) Carnivora (2) Tubulidentata (3) Proboscidea
+    
+```{r}    
 # Plot: Residuals of newborn mass (relNewbornMass) in relation to Order
-p_relNewbornMass <- ggplot(data = d, aes(x = order, y = relNewbornMass)) + 
+p_relNewbornMass <- ggplot(data = d %>% drop_na(relNewbornMass), aes(x = order, y = relNewbornMass)) + 
   geom_boxplot() + 
   geom_jitter(alpha = 0.05) + # makes the dots more transparent 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
@@ -140,9 +139,17 @@ relNewbornMass_5NumSum <- d %>%
             Q3 = fivenum(relNewbornMass)[4],
             max = fivenum(relNewbornMass)[5])
 relNewbornMass_5NumSum
+```
+    
+- Plot residuals of weaning mass (relWeaningMass) in relation to Order. Which mammalian orders have the have highest relative weaning mass?
+
+    - Based on maximum values, mammalian orders with the highest relative weaning mass: (1) Carnivora, (2) Rodentia, (3) Lagomorpha
+    - Based on median values, the mammalian orders with the highest relative weaning mass: (1) Xenarthra, (2) Tubulidentata, (3) Hyracoidea
+    
+```{r}    
 
 # Plot: Residuals of weaning mass (relWeaningMass) in relation to Order
-p_relWeaningMass <- ggplot(data = d, aes(x = order, y = relWeaningMass)) + 
+p_relWeaningMass <- ggplot(data = d %>% drop_na(relWeaningMass), aes(x = order, y = relWeaningMass)) + 
   geom_boxplot() + 
   geom_jitter(alpha = 0.05) + # makes the dots more transparent 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
@@ -165,14 +172,15 @@ relWeaningMass_5NumSum
 - Run models and a model selection process to evaluate what (now log transformed) variables best predict each of the two response variables, max. life(mo) and AFR(mo), from the set of the following predictors: gestation(mo), newborn(g), weaning(mo), wean mass(g), litters/year, and overall body mass(g).
 - For each of the two response variables, indicate what is the best model overall based on AICc and how many models have a delta AICc of 4 or less.
 
-    - See below. For `max. life(mo)` m4 is the best model, and it is the only model that has a delta AICc of 4 or less. For `AFR(m0)`, lm4 is the best model, and it is the only model that has  a delta AICc of 4 or less. 
+    - See below. For `max. life(mo)` m4 is the best model which includes log transformed variables of `gestation(mo)`, `litters/year`, `mass(g)`,`weaning(mo)`. It is the only model that has a delta AICc of 4 or less. For `AFR(m0)`, lm4 is the best model which includes log transformed variables of `litters/year`, `gestation(mo)`, `wean mass(g)`, and `weaning(mo)`. It is the only model that has  a delta AICc of 4 or less. 
     
 - What variables, if any, appear in all of this set of “top” models?
 
-    - The variables that appear in all the sets are `gestation(mo)`, `litters/year`, and `weaning(mo)`. 
+    - The variables that appear in all the sets are log transformed `gestation(mo)`, `litters/year`, and `weaning(mo)`. 
     
 - Calculate and plot the model-averaged coefficients and their CIs across this set of top models.
 
+First: max life
 ```{r}
 # First, drop NAs
 # Drop NAs for the response variable max. life(mo)
@@ -180,12 +188,11 @@ d_maxLife <- d %>%
   drop_na(`max. life(mo)`,`gestation(mo)`, `newborn(g)`, `weaning(mo)`, `wean mass(g)`, `litters/year`, `mass(g)`)
 
 # Forward Selection Regression Modeling for max. life(mo)
-# max. life(mo)
+# max. life(mo) null model 
 m0 <- lm(data = d_maxLife, `max. life(mo)` ~ 1)
-summary(m0)
-
 add1(m0, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, test = "F")
 # All values would add explanatory power, but gestation(mo) is associated with the highest new F statistic
+
 m1 <- update(m0, formula = . ~ . + `gestation(mo)`)
 summary(m1)
 
@@ -220,51 +227,60 @@ summary(s)
 # Check delta AICc of 4 or less
 library(AICcmodavg)
 aictab(list(m0, m1, m2, m3, m4), c("m0", "m1", "m2", "m3", "m4"))
+```
 
-
+Next: AFR 
+```{r}
 # Repeat for AFR (mo)
 # Drop NAs for the response variable AFR(mo)
 d_AFR <- d %>%
-  drop_na(`AFR(mo)`,`gestation(mo)`, `newborn(g)`, `weaning(mo)`, `wean mass(g)`, `litters/year`, `mass(g)`)
+  drop_na(`AFR(mo)`,`mass(g)`, `gestation(mo)`, `newborn(g)`, `weaning(mo)`, `wean mass(g)`, `litters/year`, )
 
-# Create base linear model
-lm0 <- lm(data = d_AFR, `AFR(mo)` ~ 1)
-summary(m0)
+# Create AFR null linear model 
+m0_AFR <- lm(data = d_AFR, `AFR(mo)` ~ 1)
+add1(m0_AFR, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, test = "F")
 
-add1(lm0, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, test = "F")
+# Create AFR null linear model
+m0_AFR <- lm(data = d_AFR, `AFR(mo)`~ 1)
+
+# Add all variables 
+add1(m0_AFR, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)`+ `litters/year` + `mass(g)`, test = "F")
 
 # All values would add explanatory power, but `litters/year` is associated with the highest new F statistic
-lm1 <- update(lm0, formula = . ~ . + `litters/year`)
-summary(lm1)
 
-add1(lm1, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, test = "F")
+m1_AFR <- update(m0_AFR, formula = . ~ . + `litters/year`)
+summary(m1_AFR)
+
+add1(m1_AFR, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)`+ `litters/year` + `mass(g)`, test = "F")
 
 # All values would add explanatory power, but `gestation(mo)` is associated with the highest new F statistic
-lm2 <- update(lm1, formula = . ~ . + `gestation(mo)`)
-summary(lm2)
 
-add1(lm2, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, test = "F")
+m2_AFR <- update(m1_AFR, formula = . ~ . + `gestation(mo)`)
+summary(m2_AFR)
 
-# `weaning(mo)`, `wean mass(g)`, `mass(g)` would add explanatory power, but `wean mass(g)` is associated with the highest new F statistic
-lm3 <- update(lm2, formula = . ~ . + `wean mass(g)`)
-summary(lm3)
+add1(m2_AFR, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)`+ `litters/year` + `mass(g)`, test = "F")
 
-add1(lm3, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, test = "F")
+# `weaning(mo)`, `wean mass(g)`, and `mass(g)` would add explanatory power, but `wean mass(g)` is associated with the highest new F statistic
 
-# Only `weaning(mo)` is significant
-lm4 <- update(lm3, formula = . ~ . + `weaning(mo)`)
-summary(lm4)
+m3_AFR <- update(m2_AFR, formula = . ~ . + `wean mass(g)`)
+summary(m3_AFR)
 
-add1(lm4, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, test = "F")
-# No more significance! There are not any more predictors that would improve the explanatory power of the model. 
-# lm4 is the best model for AFR(m0)
-aictab(list(lm0, lm1, lm2, lm3, lm4), c("lm0", "lm1", "lm2", "lm3", "lm4"))
+add1(m3_AFR, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)`+ `litters/year` + `mass(g)`, test = "F")
+
+# Only `weaning (mo)` is associated with the highest new F statistic
+m4_AFR <- update(m3_AFR, formula = . ~ . + `weaning(mo)`)
+summary(m4_AFR)
+
+add1(m4_AFR, scope = . ~ . + `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)`+ `litters/year` + `mass(g)`, test = "F")
+#Remaining variables do not add any more explanatory power. 
+
+aictab(list(m0_AFR, m1_AFR, m2_AFR, m3_AFR, m4_AFR), c("m0_AFR", "m1_AFR", "m2_AFR", "m3_AFR", "m4_AFR"))
 detach(package:AICcmodavg)
 
 # ...Using AIC to select
 # Start with the full model 
-m.full.AFR <- lm(data = d_AFR, `AFR(mo)` ~ `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`)
-s <- stepAIC(m.full.AFR, scope = .~., direction = "both")
+m.full.AFR <- lm(data = d_AFR, `AFR(mo)` ~ `gestation(mo)` + `newborn(g)` + `weaning(mo)` + `wean mass(g)` + `litters/year` + `mass(g)`, na.action = na.fail)
+s <- stepAIC(m.full.AFR, scope = . ~ ., direction = "both")
 summary(s)
 # ... this confirms lm4 as our model since the same terms as before, `gestation(mo)`, `weaning(mo)`, `litters/year`, and `mass(g)` add explanatory power to the model. 
 detach(package:MASS)
